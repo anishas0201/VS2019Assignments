@@ -1,0 +1,52 @@
+﻿
+@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link href="~/css/Stylesheet.css" rel="stylesheet" />
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg ">
+        <div class="container-fluid">
+            <img src="~/Images/logo.jpg"  style="width:7%;"/>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="margin-left:4%;">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("RoleList","MainBody")">Role Master</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("DepartmentList","MainBody")">Department Master</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("StudentList","MainBody")">Student Master</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="margin-left:720px;" href="@Url.Action("Login","Login")">Logout</a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid" style="margin-left:25%">
+        <br /><br />
+        <h2>Welcome!! <span style="color:brown">@ViewBag.sess</span></h2>
+        <h6>Click here to get <a href="@Url.Action("AdmissionForm","MainBody")">Admission Form</a></h6>
+
+    </div>
+
+
+
+</body>
+</html>

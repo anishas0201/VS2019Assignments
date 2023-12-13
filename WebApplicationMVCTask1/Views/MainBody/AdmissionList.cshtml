@@ -1,0 +1,252 @@
+﻿@{ Layout = null; }
+@using WebApplicationMVCTask1.Models;
+
+@{
+    ViewBag.Title = "AdmissionList";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Information</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+
+    <link href="~/css/Stylesheet.css" rel="stylesheet" />
+
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg ">
+        <div class="container-fluid">
+            <img src="~/Images/logo.jpg" style="width:7%;" />
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="margin-left:4%;">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("RoleList","MainBody")">Role Master</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("DepartmentList","MainBody")">Department Master</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("StudentList","MainBody")">Student Master</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="margin-left:720px;" href="@Url.Action("Login","Login")">Logout</a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <br /><br />
+
+        <h2 style="color: #19234F;margin-left:25%;"><b>Admission Data List</b></h2>
+        <p style="color: #19234F;margin-left:25%;">
+            @Html.ActionLink("Create New", "AdmissionForm")
+        </p>
+        <div class="row" style="margin-left:1%;">
+            <h4>To search by date:</h4>
+            <div class="col-md-3">
+                <label for="fromDate">From Date:</label>
+                <input type="date" id="fromDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label for="toDate">To Date:</label>
+                <input type="date" id="toDate" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button class="btn btn-primary" onclick="filterByDate()">Search</button>
+            </div>
+        </div>
+        <div class="row" style="margin-left:1%;">
+            <div class="col-md-3">
+                <button class="btn btn-primary" onclick="exportfn()">Export Excel</button>
+            </div>
+        </div>
+        <table id="tbl" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Admission Id</th>
+                    <th>College Name</th>
+                    <th>Student Name</th>
+                    <th>Branch Name</th>
+                    <th>Role Designation</th>
+                    <th>Admission Date</th>
+                    <th>College Fees</th>
+                    <th>Payment Status</th>
+                    <th>Is Active</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="admissionTableBody">
+                @foreach (var item in Model as List<AdmissionFormData>)
+                {
+                    <tr>
+                        <td>@item.AdmissionId</td>
+                        <td>@item.CollegeName</td>
+                        <td>@item.StudentName</td>
+                        <td>@item.BranchName</td>
+                        <td>@item.RoleDesignation</td>
+                        <td>@item.AdmissionDate.ToShortDateString()</td>
+                        <td>@item.CollegeFees</td>
+                        <td>@item.IsPaymentDone</td>
+                        <td>@item.IsActive</td>
+
+                        <td> @Html.ActionLink("Edit", "GetCollegebyId", new { AdmissionId = item.AdmissionId }, new { @class = "btn btn-primary" })</td>
+
+                        <td><button onclick="deletefn(@item.AdmissionId)">Delete</button></td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>
+
+
+
+<script>
+    function deletefn(AdmissionId) {
+        debugger;
+        console.log(AdmissionId);
+        console.log("btnClick");
+        var a = confirm("Sure You Want to Delete The data..!!");
+        if (a == true) {
+            $.ajax({
+                url: "/MainBody/DeleteCollegeDetail?AdmissionId=" + AdmissionId,
+                type: "POST",
+                success: function (data) {
+
+                    $("#admissionTableBody").html(data);
+                },
+                error: function (err) {
+                    console.error(err.message);
+                    return;
+                }
+            });
+        }
+    }
+</script>
+
+<script>
+    function filterByDate() {
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+        debugger;
+        $.ajax({
+
+            url: "/MainBody/SearchByDate",
+            type: "POST",
+            data: { fromDate: fromDate, toDate: toDate },
+            dataType: "json",
+            success: function (data) {
+
+                // console.log(data);
+                updateTable(data);
+            },
+
+            error: function (err) {
+                console.error(err.message);
+            }
+        });
+    }
+</script>
+<script>
+    function updateTable(data) {
+        debugger;
+        var table = $("#tbl").find('tbody');
+        table.empty(); // Clear existing rows
+        debugger;
+        if (data != null && data != undefined) {
+            for (var i = 0; i < data.data.length; i++) {
+                debugger;
+                table.append(
+                    "<tr>" +
+                    "<td>" + data.data[i].admissionId + "</td>" +
+                    "<td>" + data.data[i].collegeName + "</td>" +
+                    "<td>" + data.data[i].studentName + "</td>" +
+                    "<td>" + data.data[i].branchName + "</td>" +
+                    "<td>" + data.data[i].roleDesignation + "</td>" +
+                    "<td>" + data.data[i].admissionDate + "</td>" +
+                    "<td>" + data.data[i].collegeFees + "</td>" +
+                    "<td>" + data.data[i].isPaymentDone + "</td>" +
+                    "<td>" + data.data[i].isActive + "</td>" +
+                    "<td>" + "<a href='/MainBody/GetCollegebyId?AdmissionId=" + data.data[i].admissionId + "' class='btn btn-primary'>Edit</a>" + "</td>" +
+                    "<td>" + "<button onclick='deletefn(" + data.data[i].admissionId + ")'>Delete</button>" + "</td>" +
+                    "</tr>"
+                );
+            }
+        }
+    }
+
+
+</script>
+
+
+<script>
+    function exportfn() {
+        var tableData = [];
+        $('table tbody tr').each(function (rowIndex, row) {
+            var rowData = [];
+            $(row).find('td').each(function (colIndex, col) {
+                rowData.push($(col).text());
+            });
+            tableData.push(rowData);
+        });
+        var wb = XLSX.utils.book_new();
+        var ws = XLSX.utils.aoa_to_sheet([['Role ID', 'Role Name', 'Role Designation', 'Created Date', 'Is Active']].concat(tableData));
+        XLSX.utils.book_append_sheet(wb, ws, 'Roles');
+        XLSX.writeFile(wb, 'RoleData.xlsx');
+    }
+
+</script>
+
+
+@*<script>
+        function updateTable(data) {
+            debugger;
+            var tableBody = $("#admissionTableBody");
+            tableBody.empty();
+
+            // Iterate through the filtered data and append rows to the table
+            $.each(data, function (index, item) {
+                console.log("Processing item:", item);
+                var row = "<tr>" +
+                    "<td>" + item.admissionId + "</td>" +
+                    "<td>" + item.collegeName + "</td>" +
+                    "<td>" + item.studentName + "</td>" +
+                    "<td>" + item.branchName + "</td>" +
+                    "<td>" + item.roleDesignation + "</td>" +
+                    "<td>" + item.admissionDate + "</td>" +
+                    "<td>" + item.collegeFees + "</td>" +
+                    "<td>" + item.isPaymentDone + "</td>" +
+                    "<td>" + item.isActive + "</td>" +
+                    "<td>" + "<a href='/MainBody/GetCollegebyId?AdmissionId=" + item.admissionId + "' class='btn btn-primary'>Edit</a>" + "</td>" +
+                    "<td>" + "<button onclick='deletefn(" + item.admissionId + ")'>Delete</button>" + "</td>" +
+                    "</tr>";
+
+                tableBody.append(row);
+            });
+        }
+    </script>*@
+
+
+

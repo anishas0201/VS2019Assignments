@@ -1,0 +1,75 @@
+﻿@model WebApplicationMVCTask1.Models.DepartmentUser
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />  
+    <title>Edit Department Master</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="~/css/Stylesheet.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 style="color: #19234F;margin-left:25%;"><b>Edit Department Master</b></h2>
+        <form style="margin-left:25%;">
+            <div class="mb-3" >
+                <label for="BranchId" class="form-label"><b>Branch ID</b></label>
+                <input type="text" class="form-control" id="BranchId" value="@Model.BranchId" required>
+            </div>
+            <div class="mb-3">
+                <label for="branchName" class="form-label"><b>Branch Name</b></label>
+                <input type="text" class="form-control" id="branchName" value="@Model.BranchName" required>
+            </div>
+            <div class="mb-3">
+                <label for="hodName" class="form-label"><b>HOD Name</b></label>
+                <input type="text" class="form-control" id="hodName" value="@Model.HODName" required>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="isActive" name="isActive" @(Model.IsActive ? "checked" : "")>
+
+                <label class="form-check-label" for="isActive"><b>Is Active</b></label>
+            </div>
+            <button type="button"  id="update">Update</button>
+            <button type="button" class="btn btn-danger" id="cancel">Cancel</button>
+        </form>
+    </div>
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {
+        $('#update').click(function (BranchId) {
+
+            let obj = {};
+            debugger;
+            obj.BranchId = $("#BranchId").val();
+            obj.BranchName = $("#branchName").val();
+            debugger;
+            obj.HODName = $("#hodName").val();
+            debugger;
+            obj.IsActive = $("#isActive").prop("checked");
+            $.ajax({
+                url: "/MainBody/UpdateDepartment",
+                type: "POST",
+                data: obj,
+                success: function (data) {
+
+                    alert(JSON.stringify(data.message));
+                    location.reload();
+                    window.location.href = "/MainBody/DepartmentList";
+                },
+                error: function (err) {
+
+                    console.error(err.message);
+                },
+            });
+        });
+    });
+</script>

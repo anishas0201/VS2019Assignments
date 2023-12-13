@@ -1,0 +1,101 @@
+﻿@model WebApplicationMVCTask1.Models.AdmissionFormData
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Admission Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="~/css/Stylesheet.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 style="color: #19234F;margin-left:25%;"><b>Edit Admission Details</b></h2>
+        <form id="roleForm" style="margin-left:25%;">
+            <div class="mb-3">
+                <label for="admissionId" class="form-label"><b>Admission ID</b></label>
+                <input type="text" class="form-control" id="admissionId" name="admissionId" value="@Model.AdmissionId" required>
+            </div>
+            <div class="mb-3">
+                <label for="collegeName" class="form-label"><b>College Name</b></label>
+                <input type="text" class="form-control" id="collegeName" name="collegeName" value="@Model.CollegeName" required>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label"><b>Student-Name</b></label>
+                @Html.DropDownList("name", ViewBag.name as SelectList, Model.StudentName, new { @class = "form-select", id = "ddlname" })
+            </div>
+            <div class="mb-3">
+                <label for="branch" class="form-label"><b>Branch-Name</b></label>
+                @Html.DropDownList("branch", ViewBag.branch as SelectList, Model.BranchName, new { @class = "form-select", id = "ddlbranch" })
+            </div>
+            <div class="mb-3">
+                <label for="designation" class="form-label"><b>Role-Designation</b></label>
+                @Html.DropDownList("designation", ViewBag.desig as SelectList, Model.RoleDesignation, new { @class = "form-select", id = "ddldesig" })
+            </div>
+            <div class="mb-3">
+                <label for="admissionDate" class="form-label"><b>Admission Date</b></label>
+                <input type="text" class="form-control" id="admissionDate" name="admissionDate" value="@Model.AdmissionDate.ToString("MM/dd/yyyy")" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="collageFees" class="form-label"><b>College Fees</b></label>
+                <input type="number" class="form-control" id="collageFees" name="collageFees" value="@Model.CollegeFees" required>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="clgPayment" name="clgPayment" @(Model.IsPaymentDone ? "checked" : "")>
+                <label class="form-check-label" for="clgPayment"><b>College Payment Done</b></label>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="isActive" name="isActive" @(Model.IsActive ? "checked" : "")>
+                <label class="form-check-label" for="isActive"><b>Is Active</b></label>
+            </div>
+            <button type="button" id="update">Update</button>
+            <button type="button" class="btn btn-danger" id="cancel">Cancel</button>
+
+        </form>
+    </div>
+
+
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        $('#update').click(function (AdmissionId) {
+
+            let obj = {};
+            debugger;
+            obj.AdmissionId = $("#admissionId").val();
+            obj.CollegeName = $("#collegeName").val();
+            debugger;
+            obj.StudentName = $("#ddlname").val();
+            obj.BranchName = $("#ddlbranch").val();
+            obj.RoleDesignation = $("#ddldesig").val();
+            obj.AdmissionDate = $("#admissionDate").val();
+            obj.CollegeFees = $("#collageFees").val();
+         
+            debugger;
+            obj.IsPaymentDone = $("#clgPayment").prop("checked");
+            obj.IsActive = $("#isActive").prop("checked");
+            $.ajax({
+                url: "/MainBody/UpdateCollegeDetail",
+                type: "POST",
+                data: obj,
+                success: function (data) {
+                    alert(JSON.stringify(data.message));
+                    location.reload();
+                    window.location.href = "/MainBody/AdmissionList";
+                },
+                error: function (err) {
+                    console.error(err.message);
+                },
+            });
+        });
+    });
+</script>
